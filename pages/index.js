@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import Head from 'next/head'
 
 const defaultEndpoint = `https://rickandmortyapi.com/api/character/`;
@@ -13,7 +14,65 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ data }) {
-  const { results = [] } = data;
+  const { info, results: defaultResults = [] } = data;
+
+  const [results, updateResults] = useState(defaultResults);
+
+  const [page, updatePage] = useState({
+    ...info,
+    current: defaultEndpoint
+  });
+  const { current } = page;
+
+  useEffect(() => {
+    // Don't bother making a request if it's the default endpoint as we
+    // received that on the server
+
+    if ( current === defaultEndpoint ) return;
+
+    // In order to use async/await, we need an async function, and you can't
+    // make the `useEffect` function itself async, so we can create a new
+    // function inside to do just that
+
+    async function request() {
+      const res = await fetch(current)
+      const nextData = await res.json();
+
+      updatePage({
+        current,
+        ...nextData.info
+      });
+
+      // If we don't have `prev` value, that means that we're on our "first page"
+      // of results, so we want to replace the results and start fresh
+
+      if ( !nextData.info?.prev ) {
+        updateResults(nextData.results);
+        return;
+      }
+
+      // Otherwise we want to append our results
+
+      updateResults(prev => {
+        return [
+          ...prev,
+          ...nextData.results
+        ]
+      });
+    }
+
+    request();
+  }, [current]);
+
+  function handleLoadMore() {
+    updatePage(prev => {
+      return {
+        ...prev,
+        current: page?.next
+      }
+    });
+  }
+
   return (
     <div className="container">
       <Head>
@@ -43,6 +102,10 @@ export default function Home({ data }) {
             )
           })}
         </ul>
+
+        <p>
+          <button onClick={handleLoadMore}>Load More</button>
+        </p>
       </main>
 
       <footer>
