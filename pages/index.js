@@ -73,6 +73,21 @@ export default function Home({ data }) {
     });
   }
 
+  function handleOnSubmitSearch(e) {
+    e.preventDefault();
+
+    const { currentTarget = {} } = e;
+    const fields = Array.from(currentTarget?.elements);
+    const fieldQuery = fields.find(field => field.name === 'query');
+
+    const value = fieldQuery.value || '';
+    const endpoint = `https://rickandmortyapi.com/api/character/?name=${value}`;
+
+    updatePage({
+      current: endpoint
+    });
+  }
+
   return (
     <div className="container">
       <Head>
@@ -88,6 +103,11 @@ export default function Home({ data }) {
         <p className="description">
           Rick and Morty Character Wiki
         </p>
+
+        <form className="search" onSubmit={handleOnSubmitSearch}>
+          <input name="query" type="search" />
+          <button>Search</button>
+        </form>
 
         <ul className="grid">
           {results.map(result => {
@@ -249,6 +269,22 @@ export default function Home({ data }) {
           .grid {
             width: 100%;
             flex-direction: column;
+          }
+        }
+
+        .search input {
+          margin-right: .5em;
+        }
+
+        @media (max-width: 600px) {
+          .search input {
+            margin-right: 0;
+            margin-bottom: .5em;
+          }
+
+          .search input,
+          .search button {
+            width: 100%;
           }
         }
       `}</style>
