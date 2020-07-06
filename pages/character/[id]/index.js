@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
 const defaultEndpoint = `https://rickandmortyapi.com/api/character/`;
 
-export async function getServerSideProps() {
-  const res = await fetch(defaultEndpoint)
+export async function getServerSideProps({ query }) {
+  const { id } = query;
+  const res = await fetch(`${defaultEndpoint}${id}`);
   const data = await res.json();
   return {
     props: {
@@ -14,133 +14,55 @@ export async function getServerSideProps() {
   }
 }
 
-export default function Home({ data }) {
-  const { info, results: defaultResults = [] } = data;
-
-  const [results, updateResults] = useState(defaultResults);
-
-  const [page, updatePage] = useState({
-    ...info,
-    current: defaultEndpoint
-  });
-  const { current } = page;
-
-  useEffect(() => {
-    // Don't bother making a request if it's the default endpoint as we
-    // received that on the server
-
-    if ( current === defaultEndpoint ) return;
-
-    // In order to use async/await, we need an async function, and you can't
-    // make the `useEffect` function itself async, so we can create a new
-    // function inside to do just that
-
-    async function request() {
-      const res = await fetch(current)
-      const nextData = await res.json();
-
-      updatePage({
-        current,
-        ...nextData.info
-      });
-
-      // If we don't have `prev` value, that means that we're on our "first page"
-      // of results, so we want to replace the results and start fresh
-
-      if ( !nextData.info?.prev ) {
-        updateResults(nextData.results);
-        return;
-      }
-
-      // Otherwise we want to append our results
-
-      updateResults(prev => {
-        return [
-          ...prev,
-          ...nextData.results
-        ]
-      });
-    }
-
-    request();
-  }, [current]);
-
-  function handleLoadMore() {
-    updatePage(prev => {
-      return {
-        ...prev,
-        current: page?.next
-      }
-    });
-  }
-
-  function handleOnSubmitSearch(e) {
-    e.preventDefault();
-
-    const { currentTarget = {} } = e;
-    const fields = Array.from(currentTarget?.elements);
-    const fieldQuery = fields.find(field => field.name === 'query');
-
-    const value = fieldQuery.value || '';
-    const endpoint = `https://rickandmortyapi.com/api/character/?name=${value}`;
-
-    updatePage({
-      current: endpoint
-    });
-  }
-
+export default function Character({ data }) {
+  const { name, image, gender, location, origin, species, status } = data;
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
+        <title>{ name }</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1 className="title">
-          Wubba Lubba Dub Dub!
-        </h1>
+        <h1 className="title">{ name }</h1>
 
-        <p className="description">
-          Rick and Morty Character Wiki
-        </p>
-
-        <form className="search" onSubmit={handleOnSubmitSearch}>
-          <input name="query" type="search" />
-          <button>Search</button>
-        </form>
-
-        <ul className="grid">
-          {results.map(result => {
-            const { id, name, image } = result;
-            return (
-              <li key={id} className="card">
-                <Link href="/character/[id]" as={`/character/${id}`}>
-                  <a>
-                    <img src={image} alt={`${name} Thumbnail`} />
-                    <h3>{ name }</h3>
-                  </a>
-                </Link>
+        <div className="profile">
+          <div className="profile-image">
+            <img src={image} alt={name} />
+          </div>
+          <div className="profile-details">
+            <h2>Character Details</h2>
+            <ul>
+              <li>
+                <strong>Name:</strong> { name }
               </li>
-            )
-          })}
-        </ul>
+              <li>
+                <strong>Status:</strong> { status }
+              </li>
+              <li>
+                <strong>Gender:</strong> { gender }
+              </li>
+              <li>
+                <strong>Species:</strong> { species }
+              </li>
+              <li>
+                <strong>Location:</strong> { location?.name }
+              </li>
+              <li>
+                <strong>Originally From:</strong> { origin?.name }
+              </li>
+            </ul>
+          </div>
+        </div>
 
-        <p>
-          <button onClick={handleLoadMore}>Load More</button>
+        <p className="back">
+          <Link href="/">
+            <a>
+              Back to All Characters
+            </a>
+          </Link>
         </p>
       </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
 
       <style jsx>{`
         .container {
@@ -289,6 +211,30 @@ export default function Home({ data }) {
           .search button {
             width: 100%;
           }
+        }
+
+        .profile {
+          display: flex;
+          margin-top: 2em;
+        }
+        @media (max-width: 600px) {
+          .profile {
+            flex-direction: column;
+          }
+        }
+        .profile-image {
+          margin-right: 2em;
+        }
+        @media (max-width: 600px) {
+          .profile-image {
+            max-width: 100%;
+            margin: 0 auto;
+          }
+        }
+
+        .back a {
+          color: blue;
+          text-decoration: underline;
         }
       `}</style>
 
