@@ -129,14 +129,22 @@ export default function Home({ data }) {
           {results.map(result => {
             const { id, name, image } = result;
             return (
-              <li key={id} className="card">
+              <motion.li key={id} className="card" whileHover={{
+                position: 'relative',
+                zIndex: 1,
+                background: 'white',
+                scale: 1.2  ,
+                transition: {
+                  duration: .2
+                }
+              }}>
                 <Link href="/character/[id]" as={`/character/${id}`}>
                   <a>
                     <img src={image} alt={`${name} Thumbnail`} />
                     <h3>{ name }</h3>
                   </a>
                 </Link>
-              </li>
+              </motion.li>
             )
           })}
         </ul>
@@ -157,7 +165,7 @@ export default function Home({ data }) {
         </a>
       </footer>
 
-      <style jsx>{`
+      <style>{`
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
