@@ -1,3 +1,21 @@
+# My Rick and Morty Wiki
+
+Demo for tutorials that help you create a new Next.js app that can dynamically pull in character information and add animations with Framer.js.
+
+## How to Create a Dynamic Rick and Morty Wiki Web App with Next.js
+* https://www.freecodecamp.org/news/how-to-create-a-dynamic-rick-and-morty-wiki-web-app-with-next-js/
+* https://www.youtube.com/watch?v=iW39Merz0zE
+
+## How to Add Interactive Animations and Page Transitions to a Next.js Web App with Framer Motion
+* https://www.freecodecamp.org/news/how-to-add-interactive-animations-and-page-transitions-to-a-next-js-web-app-with-framer-motion/
+* https://www.youtube.com/watch?v=q9tpBtvTTz8
+
+## More tutorials from Colby Fayock
+* https://www.freecodecamp.org/news/author/colbyfayock/
+* https://youtube.com/colbyfayock
+
+---
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
