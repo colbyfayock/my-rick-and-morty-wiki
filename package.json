@@ -8,8 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "framer-motion": "^1.11.1",
-    "next": "9.4.4",
+    "framer-motion": "^2.7.5",
+    "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   }
